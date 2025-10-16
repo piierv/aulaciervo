@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BancoEstatia · Prototipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#ff7a00;
+    --primary-2:#ff9f47;
+    --cta:#3556d9;
+    --bg:#f3f5f8;
+    --card:#ffffff;
+    --text:#111827;
+    --muted:#6b7280;
+    --radius:22px;
+    --shadow:0 16px 28px rgba(16,24,40,.12);
+    --soft:0 6px 16px rgba(17,24,39,.08);
+    --chip-danger:#d44c44;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    background:var(--bg); color:var(--text);
+  }
+
+  /* ===== Header ===== */
+  .app-header{
+    position:relative; height:188px; overflow:hidden;
+    background:linear-gradient(160deg,var(--primary),var(--primary-2)); color:#fff;
+  }
+  .app-header::after{
+    content:""; position:absolute; left:-20%; right:-20%; bottom:-58px;
+    height:220px; border-radius:50% 50% 0 0; background:inherit; filter:brightness(.92);
+  }
+  .brandbar{
+    position:absolute; left:16px; top:12px; display:flex; align-items:center; gap:10px; z-index:2;
+  }
+  .brand-logo{width:26px; height:26px; border-radius:6px; overflow:hidden}
+  .brand-logo img{width:100%; height:100%; object-fit:contain}
+  .brand-name-img{height:22px; width:auto; display:block; object-fit:contain}
+  .brand-divider{width:1px; height:26px; background:#ffffffb5}
+  .brand-anniv{height:24px; width:auto; object-fit:contain}
+  .top-right{
+    position:absolute; top:12px; right:14px; display:flex; gap:14px; align-items:center; z-index:2;
+  }
+  .hdr-bell{width:30px; height:30px; object-fit:contain; display:block}
+  .hdr-avatar{
+    width:36px; height:36px; border-radius:50%; display:grid; place-items:center;
+    background:#fff; border:2px solid #ffffff88; box-shadow:0 2px 8px rgba(0,0,0,.12);
+    overflow:hidden; padding:4px; cursor:pointer;
+  }
+  .hdr-avatar img{width:100%; height:100%; object-fit:contain}
+
+  /* ===== Contenido general (dashboard) ===== */
+  .container{max-width:480px; margin:0 auto; padding:0 14px 110px; position:relative; top:-84px}
+  .card{ background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; }
+  .card + .card{margin-top:18px}
+
+  .account-card .title{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px}
+  .account-card h2{font-size:18px; margin:0; font-weight:900}
+  .saldo{font-size:40px; font-weight:900; margin:2px 0 6px; font-variant-numeric:tabular-nums}
+  .meta{color:var(--muted); font-size:14px; margin-bottom:12px}
+  .actions-row{display:flex; gap:12px; flex-wrap:wrap}
+  .btn{appearance:none; border:0; border-radius:999px; padding:12px 22px; font-weight:800; cursor:pointer; font-size:15px; line-height:1}
+  .btn.primary{background:var(--cta); color:#fff; box-shadow:0 10px 18px rgba(53,86,217,.30), inset 0 -2px 0 rgba(0,0,0,.06)}
+  .btn.outline{background:#fff; color:var(--cta); border:2px solid rgba(51,86,217,.35); box-shadow:var(--soft)}
+  .share{width:24px; height:24px; object-fit:contain; opacity:.9}
+
+  .facial-card{padding:0}
+  .facial-inner{display:grid; grid-template-columns:92px 1fr; gap:0; padding:18px}
+  .facial-img{width:92px; height:92px; border-radius:14px; overflow:hidden; margin:auto; box-shadow:var(--soft)}
+  .facial-img img{width:100%; height:100%; object-fit:cover}
+  .facial-body{padding-left:12px; display:flex; flex-direction:column}
+  .facial-title{margin:0; font-size:20px; font-weight:900; color:#f59e0b}
+  .facial-text{margin:6px 0 12px; font-size:15px; color:#334155}
+  .facial-cta{align-self:flex-start; background:var(--cta); color:#fff; border-radius:999px; padding:12px 22px; font-weight:800; border:none; outline:none; box-shadow:0 8px 16px rgba(53,86,217,.22)}
+  .facial-cta:focus-visible{outline:none; box-shadow:0 0 0 3px rgba(53,86,217,.28)}
+  .facial-dots{display:flex; gap:8px; justify-content:center; padding:10px 0 16px}
+  .dot{width:10px; height:10px; border-radius:50%; background:#d1d5db}
+  .dot.active{background:#ffa11d}
+
+  .section{margin-top:18px}
+  .section-title{margin:0 0 10px; font-size:18px; font-weight:700; color:#3b3f45}
+
+  .debit-card{
+    margin-top:10px; min-height:132px; border-radius:20px; padding:14px 14px 14px 10px;
+    background:#e5e7eb; color:#1f2937; border:1px solid #d1d5db;
+    box-shadow:0 12px 24px rgba(0,0,0,.11);
+    display:flex; flex-direction:column; justify-content:center; gap:8px; position:relative; overflow:hidden;
+  }
+  .debit-card::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:14px; border-radius:20px 0 0 20px;
+    background:
+      linear-gradient(#0b46d1,#0b46d1) top/100% 52% no-repeat,
+      linear-gradient(#e53935,#e53935) bottom/100% 48% no-repeat;
+  }
+  .dc-top{display:flex; justify-content:space-between; align-items:center; padding-left:8px}
+  .brand{font-weight:800}
+  .visa{width:52px; height:auto; object-fit:contain}
+  .number{font-size:18px; letter-spacing:1.6px; font-variant-numeric:tabular-nums; padding-left:8px}
+  .meta-line{display:flex; gap:12px; align-items:center; padding-left:8px}
+  .subtitle{font-size:14px; color:#6b7280}
+  .chip-danger{
+    display:inline-flex; align-items:center; gap:8px; background:var(--chip-danger); color:#fff; font-weight:800;
+    border-radius:999px; padding:8px 12px; margin-left:8px; box-shadow:0 6px 14px rgba(212,76,68,.35); width:max-content;
+  }
+  .chip-danger svg{width:16px; height:16px; flex:0 0 16px}
+
+  .savings-card{ padding:18px 18px 30px; position:relative; min-height:140px; }
+  .amount{font-weight:900; font-size:32px}
+  .piggy-badge{ position:absolute; right:14px; bottom:12px; width:90px; height:90px; background:transparent; border:none; box-shadow:none; display:grid; place-items:center; overflow:hidden; pointer-events:none; }
+  .piggy-badge img{width:100%; height:100%; object-fit:contain; display:block}
+
+  .tools-title{margin:20px 0 10px; font-size:18px}
+  .tools-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px}
+  .tool{ background:#fff; border:1px solid #eef0f3; border-radius:14px; padding:10px 6px; text-align:center; box-shadow:0 6px 14px rgba(0,0,0,.05); }
+  .tool img{width:40px; height:40px; object-fit:cover; border-radius:10px; display:block; margin:0 auto 6px}
+  .tool span{font-size:12px; color:#374151}
+
+  .bottom-nav{
+    position:fixed; left:0; right:0; bottom:0; background:#fff; box-shadow:0 -10px 24px rgba(0,0,0,.10);
+    display:grid; grid-template-columns:repeat(4,1fr); padding:8px 6px calc(8px + env(safe-area-inset-bottom)); z-index:50;
+  }
+  .nav-item{ background:none; border:0; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:4px 0 2px; color:#6b7280; font-size:12px; font-weight:700; }
+  .nav-item svg{width:26px; height:26px; display:block}
+  .nav-item.active{color:#ff7a00}
+  .nav-item.active svg path{stroke:#ff7a00}
+  .nav-item:focus-visible{outline:2px solid #0003; outline-offset:2px; border-radius:10px}
+
+  @media (max-width: 360px){
+    .saldo{font-size:36px}
+    .debit-card{min-height:126px}
+    .brand-name-img{height:20px}
+  }
+
+  /* ===== PANTALLA DE INICIO (login-like) ===== */
+  #screen-inicio{
+    position:fixed; inset:0; z-index:70; display:none;
+    /* fondo con paneles diagonales para el look real */
+    background:
+      linear-gradient(150deg, #ff8a24 20%, transparent 20%) 0 10%/120% 60% no-repeat,
+      linear-gradient(210deg, #ff9b3c 18%, transparent 18%) 0 40%/120% 60% no-repeat,
+      linear-gradient(180deg, #ff7f12 0%, #ff8f2a 60%, #ff9a43 100%);
+    overflow:auto;
+  }
+  #inicio-content{min-height:100%; display:flex; flex-direction:column; align-items:center; justify-content:flex-start}
+
+  /* barra de marca grande con línea y aniversario */
+  .inicio-top{
+    width:100%; max-width:520px;
+    padding:22px 20px 0;
+    display:flex; justify-content:center; align-items:center; gap:14px;
+  }
+  .inicio-brand{height:28px; object-fit:contain; filter:drop-shadow(0 2px 6px rgba(0,0,0,.15))}
+  .inicio-vdiv{width:1px; height:26px; background:#ffffffcc}
+  .inicio-anniv{height:26px; object-fit:contain}
+
+  .inicio-main{
+    flex:1; width:100%; max-width:520px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:28px 16px 16px;
+  }
+  .inicio-hello{
+    color:#fff; font-weight:800; font-size:34px; letter-spacing:.2px; margin:24px 0 18px;
+    text-shadow:0 2px 10px rgba(0,0,0,.18);
+  }
+  .inicio-btn{
+    display:inline-flex; align-items:center; gap:14px;
+    background:#fff; color:#ff7a00; border:none; border-radius:999px;
+    height:64px; padding:0 28px; min-width:330px;
+    font-weight:900; font-size:18px; justify-content:center;
+    box-shadow:0 16px 28px rgba(0,0,0,.18), inset 0 -2px 0 rgba(0,0,0,.06); cursor:pointer;
+  }
+  /* Botón de Ingresar: deja espacio a la izquierda para el icono */
+.inicio-btn{
+  position: relative;
+  padding-left: 68px;   /* ← empuja el texto y crea margen para el icono */
+}
+
+/* Icono dentro del botón: pegado a la izquierda y centrado verticalmente */
+.inicio-btn img{
+  position: absolute;
+  left: 18px;           /* ← ajústalo si lo quieres más/menos pegado */
+  top: 50%;
+  transform: translateY(-50%);
+  height: calc(100% - 16px);  /* sigue ocupando casi toda la altura */
+  width: auto;
+}
+
+  .inicio-sub{color:#fff; opacity:.98; font-weight:700; margin-top:14px}
+
+  /* BE Pass pill (angosta) */
+  .inicio-bepass{
+    margin-top:18px; background:#fff; border-radius:16px; padding:10px 12px;
+    display:flex; align-items:center; gap:10px;
+    width:92%; max-width:420px; box-shadow:0 12px 26px rgba(0,0,0,.18);
+  }
+  .inicio-bepass img{width:20px; height:20px; object-fit:contain}
+  .inicio-bepass span{font-weight:800; color:#111827; font-size:14.5px; flex:1}
+  .inicio-bepass .chev{width:16px; height:16px; border-right:2px solid #111827; border-top:2px solid #111827; transform:rotate(45deg)}
+
+  /* versión/fecha arriba del sheet */
+  .inicio-version{
+    position:relative; width:100%; max-width:520px; padding:8px 18px 0;
+    display:flex; justify-content:flex-end; color:#ffffffdd; font-size:11.5px; font-weight:600;
+    text-shadow:0 1px 4px rgba(0,0,0,.18);
+  }
+
+  /* bottom sheet de accesos — solo imágenes grandes sin texto */
+  .inicio-bottom{
+    width:100%; max-width:520px;
+    background:#fff; border-radius:18px 18px 0 0; box-shadow:0 -12px 28px rgba(0,0,0,.18);
+    padding:14px 14px calc(14px + env(safe-area-inset-bottom));
+    position:relative;
+  }
+  .pull-chip{
+    position:absolute; left:50%; top:-14px; transform:translateX(-50%);
+    width:34px; height:34px; border-radius:999px; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,.18);
+    display:grid; place-items:center;
+  }
+  /* Antes la tenías con rotate(45deg) (mirando en diagonal). */
+.pull-chip:before{
+  content:"";
+  width:10px; height:10px;
+  border-right:2px solid #9ca3af;
+  border-top:2px solid #9ca3af;
+  transform: rotate(-45deg);   /* ↑ ahora apunta hacia arriba */
+  margin-top:2px;
+}
+
+  .inicio-title{font-size:13px; color:#6b7280; font-weight:700; margin:2px 4px 12px}
+  .inicio-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px}
+  .inicio-tool{display:flex; justify-content:center; padding:4px}
+  .inicio-tool img{
+    width:78px; height:78px; object-fit:cover; border-radius:16px;
+    box-shadow:0 10px 22px rgba(0,0,0,.14);
+  }
+
+  /* peques */
+  @media (max-width:390px){
+    .inicio-btn{min-width:300px}
+    .inicio-tool img{width:74px; height:74px}
+  }
+</style>
+</head>
+<body>
+
+  <!-- Header con logo + tu nombre en imagen -->
+  <header class="app-header">
+    <div class="brandbar">
+      <img class="brand-name-img" src="nombre_logo.jpg" alt="Nombre del banco / marca">
+      <div class="brand-divider"></div>
+      <img class="brand-anniv" src="aniversario.jpg" alt="Aniversario">
+    </div>
+
+    <div class="top-right">
+      <img class="hdr-bell" src="campana.png" alt="Notificaciones">
+      <!-- Abre inicio -->
+      <div class="hdr-avatar" title="Perfil" id="btn-open-inicio">
+        <img src="perfil.png" alt="Perfil de usuario">
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== DASHBOARD ===== -->
+  <main class="container" id="dashboard">
+    <section class="card account-card">
+      <div class="title">
+        <h2>CuentaRUT <span style="font-weight:600;color:#6b7280">00021810714</span></h2>
+        <img class="share" src="enlace.jpg" alt="Compartir / Enlace">
+      </div>      <div class="saldo">$1.128.560</div>
+      <div class="meta">Saldo disponible</div>
+      <div class="actions-row">
+        <button class="btn primary">Movimientos</button>
+        <button class="btn outline">Cartolas</button>
+      </div>
+    </section>
+
+    <section class="card facial-card">
+      <div class="facial-inner">
+        <figure class="facial-img"><img src="registro_face.jpg" alt="Ilustración de registro facial"></figure>
+        <div class="facial-body">
+          <h3 class="facial-title">Realiza tu Registro Facial</h3>
+          <p class="facial-text">Comienza a autorizar operaciones con tu rostro mediante BE Face</p>
+          <button class="facial-cta">Hazlo aquí</button>
+        </div>
+      </div>
+      <div class="facial-dots" aria-hidden="true">
+        <span class="dot"></span><span class="dot active"></span>
+      </div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">Tus tarjetas</h3>
+      <div class="debit-card" aria-label="Tarjeta CuentaRUT">
+        <div class="dc-top">
+          <div class="brand">Tarjeta CuentaRUT</div>
+          <img class="visa" src="visa.png" alt="Visa">
+        </div>
+        <div class="number">N° **** **** **** 9416</div>
+        <div class="meta-line">
+          <div class="subtitle">Titular</div>
+          <div class="chip-danger" role="status" aria-live="polite">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M7 10V8a5 5 0 0 1 10 0v2M6 10h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2Z"
+                    stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Bloqueada permanentemente
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <h3 class="section-title" style="margin-top:20px">Tus ahorros</h3>
+    <section class="card savings-card">
+      <div style="font-weight:900; font-size:18px">
+        Plazo Vivienda Giro Diferido <span style="font-weight:700; color:#6b7280">00134919787</span>
+      </div>
+      <div class="amount" style="margin-top:10px">$140.000</div>
+      <div class="subtitle" style="margin-top:4px">Monto ahorrado</div>
+      <div class="piggy-badge" aria-hidden="true"><img src="cerdonaran.jpg" alt=""></div>
+    </section>
+
+    <h3 class="tools-title">¿Qué necesitas hacer?</h3>
+    <div class="tools-grid" style="margin-bottom:26px">
+      <div class="tool"><img src="producto.jpg" alt="Pagar productos"><span>Pagar productos</span></div>
+      <div class="tool"><img src="servicio.jpg" alt="Pagar servicios"><span>Pagar servicios</span></div>
+      <div class="tool"><img src="enviar.jpg" alt="Enviar dinero al extranjero"><span>Enviar dinero al extranjero</span></div>
+      <div class="tool"><img src="seguro.jpg" alt="Contratar seguro"><span>Contratar seguro</span></div>
+    </div>
+  </main>
+
+  <!-- ===== Bottom nav ===== -->
+  <nav class="bottom-nav" role="tablist" aria-label="Navegación principal">
+    <button class="nav-item active" role="tab" aria-selected="true">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5Z" stroke="#6b7280" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div>Inicio</div>
+    </button>
+    <button class="nav-item" role="tab">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M7 7h10M13 3l4 4-4 4M17 17H7M11 21l-4-4 4-4" stroke="#6b7280" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div>Transferir</div>
+    </button>
+    <button class="nav-item" role="tab">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 5 6v6c0 4.4 3 8.4 7 9 4-0.6 7-4.6 7-9V6l-7-3Z" stroke="#6b7280" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 12.5 11 14l3.5-3.5" stroke="#6b7280" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div>Seguridad</div>
+    </button>
+    <button class="nav-item" role="tab">
+      <!-- Más (3x3 cuadritos) -->
+<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+  <g stroke="#6b7280" stroke-width="1.6" stroke-linejoin="round">
+    <rect x="3"   y="3"   width="5" height="5" rx="1"/>
+    <rect x="9.5" y="3"   width="5" height="5" rx="1"/>
+    <rect x="16"  y="3"   width="5" height="5" rx="1"/>
+
+    <rect x="3"   y="9.5" width="5" height="5" rx="1"/>
+    <rect x="9.5" y="9.5" width="5" height="5" rx="1"/>
+    <rect x="16"  y="9.5" width="5" height="5" rx="1"/>
+
+    <rect x="3"   y="16"  width="5" height="5" rx="1"/>
+    <rect x="9.5" y="16"  width="5" height="5" rx="1"/>
+    <rect x="16"  y="16"  width="5" height="5" rx="1"/>
+  </g>
+</svg>
+
+      <div>Más</div>
+    </button>
+  </nav>
+
+  <!-- ===== PANTALLA DE INICIO ===== -->
+  <section id="screen-inicio" aria-hidden="true">
+    <div id="inicio-content">
+      <!-- Marca arriba: logo grande + línea + aniversario -->
+      <div class="inicio-top">
+        <img class="inicio-brand" src="nombre_logo.jpg" alt="Marca">
+        <div class="inicio-vdiv" aria-hidden="true"></div>
+        <img class="inicio-anniv" src="aniversario.jpg" alt="Aniversario">
+      </div>
+
+      <div class="inicio-main">
+        <div class="inicio-hello">Hola Piero</div>
+
+        <!-- Botón grande con imagen ingreso.jpg -->
+        <button class="inicio-btn" id="btn-ingresar" aria-label="Ingresar">
+          <img src="ingreso.jpg" alt="">
+          Ingresar
+        </button>
+        <div class="inicio-sub">Ingresar con tu clave</div>
+
+        <!-- BE Pass pill -->
+        <div class="inicio-bepass" style="margin-bottom:8px">
+          <img src="bepass.jpg" alt="">
+          <span>BE Pass: Autoriza tus operaciones</span>
+          <div class="chev" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <!-- versión arriba del sheet -->
+      <div class="inicio-version">Versión 7.12.1.52495 R 136</div>
+
+      <!-- Bottom sheet: solo imágenes grandes -->
+      <div class="inicio-bottom">
+        <div class="pull-chip" aria-hidden="true"></div>
+        <div class="inicio-title">Accesos rápidos</div>
+        <div class="inicio-grid">
+          <div class="inicio-tool"><img src="acc_qr_rojo.jpg" alt="Generar Pase QR"></div>
+          <div class="inicio-tool"><img src="acc_pagar_qr.jpg" alt="Pagar o girar con QR"></div>
+          <div class="inicio-tool"><img src="acc_buzon_trx.jpg" alt="Buzón, trx y transfer"></div>
+          <div class="inicio-tool"><img src="acc_emergencias.jpg" alt="Emergencias y ayuda"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // ---- Barra inferior: alternar activo
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // ---- Inicio abrir/cerrar
+    const screenInicio = document.getElementById('screen-inicio');
+    const openBtn = document.getElementById('btn-open-inicio');
+    const ingresarBtn = document.getElementById('btn-ingresar');
+
+    function openInicio(){
+      screenInicio.style.display = 'block';
+      screenInicio.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeInicio(){
+      screenInicio.style.display = 'none';
+      screenInicio.setAttribute('aria-hidden','true');
+      document.body.style.overflow = '';
+    }
+
+    openBtn.addEventListener('click', openInicio);
+    ingresarBtn.addEventListener('click', closeInicio);
+
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape' && screenInicio.style.display === 'block'){ closeInicio(); }
+    });
+  </script>
+</body>
+</html>
