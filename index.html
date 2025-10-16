@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>BancoEstatia · Prototipo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -55,7 +55,7 @@
   }
   .hdr-avatar img{width:100%; height:100%; object-fit:contain}
 
-  /* ===== Contenido general (dashboard) ===== */ 
+  /* ===== Contenido general (dashboard) ===== */
   .container{max-width:480px; margin:0 auto; padding:0 14px 110px; position:relative; top:-84px}
   .card{ background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; }
   .card + .card{margin-top:18px}
@@ -137,22 +137,28 @@
     .brand-name-img{height:20px}
   }
 
-  /* ===== PANTALLA DE INICIO (login-like) ===== */
+  /* ===== PANTALLA DE INICIO (login) — FULL SCREEN SIN SCROLL ===== */
   #screen-inicio{
     position:fixed; inset:0; z-index:70; display:none;
-    /* fondo con paneles diagonales para el look real */
+    /* paneles diagonales */
     background:
       linear-gradient(150deg, #ff8a24 20%, transparent 20%) 0 10%/120% 60% no-repeat,
       linear-gradient(210deg, #ff9b3c 18%, transparent 18%) 0 40%/120% 60% no-repeat,
       linear-gradient(180deg, #ff7f12 0%, #ff8f2a 60%, #ff9a43 100%);
-    overflow:auto;
+    height:100svh;            /* alto real del móvil */
+    overflow:hidden;          /* sin desplazamiento */
+    padding-bottom:env(safe-area-inset-bottom);
   }
-  #inicio-content{min-height:100%; display:flex; flex-direction:column; align-items:center; justify-content:flex-start}
+  /* Grid de 4 filas que SIEMPRE cabe: top | main (1fr) | version | sheet */
+  #inicio-content{
+    height:100%;
+    max-width:520px; margin:0 auto;
+    display:grid; grid-template-rows:auto 1fr auto auto; row-gap:clamp(8px, 2vh, 16px);
+    align-items:center; justify-items:center;
+  }
 
-  /* barra de marca grande con línea y aniversario */
   .inicio-top{
-    width:100%; max-width:520px;
-    padding:22px 20px 0;
+    width:100%; padding:clamp(14px,2.6vh,24px) 20px 0;
     display:flex; justify-content:center; align-items:center; gap:14px;
   }
   .inicio-brand{height:28px; object-fit:contain; filter:drop-shadow(0 2px 6px rgba(0,0,0,.15))}
@@ -160,59 +166,48 @@
   .inicio-anniv{height:26px; object-fit:contain}
 
   .inicio-main{
-    flex:1; width:100%; max-width:520px;
+    width:100%; padding:0 16px;
     display:flex; flex-direction:column; align-items:center; justify-content:center;
-    padding:28px 16px 16px;
+    gap:clamp(10px, 2vh, 16px);
   }
   .inicio-hello{
-    color:#fff; font-weight:800; font-size:34px; letter-spacing:.2px; margin:24px 0 18px;
+    color:#fff; font-weight:800; font-size:clamp(26px, 4.2vh, 36px); letter-spacing:.2px;
     text-shadow:0 2px 10px rgba(0,0,0,.18);
   }
   .inicio-btn{
-    display:inline-flex; align-items:center; gap:14px;
+    position:relative;
+    display:inline-flex; align-items:center; justify-content:center;
     background:#fff; color:#ff7a00; border:none; border-radius:999px;
-    height:64px; padding:0 28px; min-width:330px;
-    font-weight:900; font-size:18px; justify-content:center;
+    height:clamp(56px, 7.5vh, 68px);           /* alto flexible para caber */
+    min-width:clamp(280px, 70vw, 360px);
+    padding:0 clamp(22px, 4vw, 28px);
+    font-weight:900; font-size:clamp(16px, 2.2vh, 18px);
     box-shadow:0 16px 28px rgba(0,0,0,.18), inset 0 -2px 0 rgba(0,0,0,.06); cursor:pointer;
+    padding-left:68px;                          /* espacio para el icono a la izquierda */
   }
-  /* Botón de Ingresar: deja espacio a la izquierda para el icono */
-.inicio-btn{
-  position: relative;
-  padding-left: 68px;   /* ← empuja el texto y crea margen para el icono */
-}
+  .inicio-btn img{
+    position:absolute; left:18px; top:50%; transform:translateY(-50%);
+    height:calc(100% - 16px); width:auto; object-fit:contain;
+  }
+  .inicio-sub{color:#fff; opacity:.98; font-weight:700; margin-top:2px; font-size:clamp(13px, 1.9vh, 15px)}
 
-/* Icono dentro del botón: pegado a la izquierda y centrado verticalmente */
-.inicio-btn img{
-  position: absolute;
-  left: 18px;           /* ← ajústalo si lo quieres más/menos pegado */
-  top: 50%;
-  transform: translateY(-50%);
-  height: calc(100% - 16px);  /* sigue ocupando casi toda la altura */
-  width: auto;
-}
-
-  .inicio-sub{color:#fff; opacity:.98; font-weight:700; margin-top:14px}
-
-  /* BE Pass pill (angosta) */
   .inicio-bepass{
-    margin-top:18px; background:#fff; border-radius:16px; padding:10px 12px;
+    background:#fff; border-radius:16px; padding:10px 12px;
     display:flex; align-items:center; gap:10px;
-    width:92%; max-width:420px; box-shadow:0 12px 26px rgba(0,0,0,.18);
+    width:min(92%, 420px); box-shadow:0 12px 26px rgba(0,0,0,.18);
   }
   .inicio-bepass img{width:20px; height:20px; object-fit:contain}
-  .inicio-bepass span{font-weight:800; color:#111827; font-size:14.5px; flex:1}
+  .inicio-bepass span{font-weight:800; color:#111827; font-size:clamp(13px, 1.9vh, 15px); flex:1}
   .inicio-bepass .chev{width:16px; height:16px; border-right:2px solid #111827; border-top:2px solid #111827; transform:rotate(45deg)}
 
-  /* versión/fecha arriba del sheet */
   .inicio-version{
-    position:relative; width:100%; max-width:520px; padding:8px 18px 0;
+    width:100%; padding:0 18px;
     display:flex; justify-content:flex-end; color:#ffffffdd; font-size:11.5px; font-weight:600;
     text-shadow:0 1px 4px rgba(0,0,0,.18);
   }
 
-  /* bottom sheet de accesos — solo imágenes grandes sin texto */
   .inicio-bottom{
-    width:100%; max-width:520px;
+    width:100%;
     background:#fff; border-radius:18px 18px 0 0; box-shadow:0 -12px 28px rgba(0,0,0,.18);
     padding:14px 14px calc(14px + env(safe-area-inset-bottom));
     position:relative;
@@ -222,28 +217,31 @@
     width:34px; height:34px; border-radius:999px; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,.18);
     display:grid; place-items:center;
   }
-  /* Antes la tenías con rotate(45deg) (mirando en diagonal). */
-.pull-chip:before{
-  content:"";
-  width:10px; height:10px;
-  border-right:2px solid #9ca3af;
-  border-top:2px solid #9ca3af;
-  transform: rotate(-45deg);   /* ↑ ahora apunta hacia arriba */
-  margin-top:2px;
-}
-
-  .inicio-title{font-size:13px; color:#6b7280; font-weight:700; margin:2px 4px 12px}
-  .inicio-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px}
-  .inicio-tool{display:flex; justify-content:center; padding:4px}
+  .pull-chip:before{
+    content:""; width:10px; height:10px; border-right:2px solid #9ca3af; border-top:2px solid #9ca3af;
+    transform: rotate(-45deg); margin-top:2px; /* ↑ flecha hacia arriba */
+  }
+  .inicio-title{font-size:13px; color:#6b7280; font-weight:700; margin:2px 4px 10px}
+  .inicio-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(10px, 2.4vw, 16px);
+  }
+  .inicio-tool{display:flex; justify-content:center}
   .inicio-tool img{
-    width:78px; height:78px; object-fit:cover; border-radius:16px;
-    box-shadow:0 10px 22px rgba(0,0,0,.14);
+    width:clamp(64px, 18vw, 82px); height:clamp(64px, 18vw, 82px);
+    object-fit:cover; border-radius:16px; box-shadow:0 10px 22px rgba(0,0,0,.14);
   }
 
-  /* peques */
+  /* pequeño ajuste extra en pantallas muy bajas (< 640px de alto) */
+  @media (max-height: 640px){
+    .inicio-top{padding-top:12px}
+    .inicio-hello{margin:6px 0}
+    .inicio-bepass{transform:scale(.96)}
+    .inicio-title{margin-bottom:6px}
+  }
+
+  /* peques en ancho */
   @media (max-width:390px){
     .inicio-btn{min-width:300px}
-    .inicio-tool img{width:74px; height:74px}
   }
 </style>
 </head>
@@ -272,7 +270,8 @@
       <div class="title">
         <h2>CuentaRUT <span style="font-weight:600;color:#6b7280">00021810714</span></h2>
         <img class="share" src="enlace.jpg" alt="Compartir / Enlace">
-      </div>      <div class="saldo">$1.128.560</div>
+      </div>
+      <div class="saldo">$1.128.560</div>
       <div class="meta">Saldo disponible</div>
       <div class="actions-row">
         <button class="btn primary">Movimientos</button>
@@ -350,22 +349,19 @@
     </button>
     <button class="nav-item" role="tab">
       <!-- Más (3x3 cuadritos) -->
-<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-  <g stroke="#6b7280" stroke-width="1.6" stroke-linejoin="round">
-    <rect x="3"   y="3"   width="5" height="5" rx="1"/>
-    <rect x="9.5" y="3"   width="5" height="5" rx="1"/>
-    <rect x="16"  y="3"   width="5" height="5" rx="1"/>
-
-    <rect x="3"   y="9.5" width="5" height="5" rx="1"/>
-    <rect x="9.5" y="9.5" width="5" height="5" rx="1"/>
-    <rect x="16"  y="9.5" width="5" height="5" rx="1"/>
-
-    <rect x="3"   y="16"  width="5" height="5" rx="1"/>
-    <rect x="9.5" y="16"  width="5" height="5" rx="1"/>
-    <rect x="16"  y="16"  width="5" height="5" rx="1"/>
-  </g>
-</svg>
-
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <g stroke="#6b7280" stroke-width="1.6" stroke-linejoin="round">
+          <rect x="3" y="3" width="5" height="5" rx="1"/>
+          <rect x="9.5" y="3" width="5" height="5" rx="1"/>
+          <rect x="16" y="3" width="5" height="5" rx="1"/>
+          <rect x="3" y="9.5" width="5" height="5" rx="1"/>
+          <rect x="9.5" y="9.5" width="5" height="5" rx="1"/>
+          <rect x="16" y="9.5" width="5" height="5" rx="1"/>
+          <rect x="3" y="16" width="5" height="5" rx="1"/>
+          <rect x="9.5" y="16" width="5" height="5" rx="1"/>
+          <rect x="16" y="16" width="5" height="5" rx="1"/>
+        </g>
+      </svg>
       <div>Más</div>
     </button>
   </nav>
@@ -373,80 +369,22 @@
   <!-- ===== PANTALLA DE INICIO ===== -->
   <section id="screen-inicio" aria-hidden="true">
     <div id="inicio-content">
-      <!-- Marca arriba: logo grande + línea + aniversario -->
+      <!-- Marca arriba -->
       <div class="inicio-top">
         <img class="inicio-brand" src="nombre_logo.jpg" alt="Marca">
         <div class="inicio-vdiv" aria-hidden="true"></div>
         <img class="inicio-anniv" src="aniversario.jpg" alt="Aniversario">
       </div>
 
+      <!-- Contenido central -->
       <div class="inicio-main">
         <div class="inicio-hello">Hola Piero</div>
-
-        <!-- Botón grande con imagen ingreso.jpg -->
         <button class="inicio-btn" id="btn-ingresar" aria-label="Ingresar">
           <img src="ingreso.jpg" alt="">
           Ingresar
         </button>
         <div class="inicio-sub">Ingresar con tu clave</div>
-
-        <!-- BE Pass pill -->
-        <div class="inicio-bepass" style="margin-bottom:8px">
+        <div class="inicio-bepass">
           <img src="bepass.jpg" alt="">
           <span>BE Pass: Autoriza tus operaciones</span>
-          <div class="chev" aria-hidden="true"></div>
-        </div>
-      </div>
-
-      <!-- versión arriba del sheet -->
-      <div class="inicio-version">Versión 7.12.1.52495 R 136</div>
-
-      <!-- Bottom sheet: solo imágenes grandes -->
-      <div class="inicio-bottom">
-        <div class="pull-chip" aria-hidden="true"></div>
-        <div class="inicio-title">Accesos rápidos</div>
-        <div class="inicio-grid">
-          <div class="inicio-tool"><img src="acc_qr_rojo.jpg" alt="Generar Pase QR"></div>
-          <div class="inicio-tool"><img src="acc_pagar_qr.jpg" alt="Pagar o girar con QR"></div>
-          <div class="inicio-tool"><img src="acc_buzon_trx.jpg" alt="Buzón, trx y transfer"></div>
-          <div class="inicio-tool"><img src="acc_emergencias.jpg" alt="Emergencias y ayuda"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <script>
-    // ---- Barra inferior: alternar activo
-    document.querySelectorAll('.bottom-nav .nav-item').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        document.querySelectorAll('.bottom-nav .nav-item').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-      });
-    });
-
-    // ---- Inicio abrir/cerrar
-    const screenInicio = document.getElementById('screen-inicio');
-    const openBtn = document.getElementById('btn-open-inicio');
-    const ingresarBtn = document.getElementById('btn-ingresar');
-
-    function openInicio(){
-      screenInicio.style.display = 'block';
-      screenInicio.setAttribute('aria-hidden','false');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeInicio(){
-      screenInicio.style.display = 'none';
-      screenInicio.setAttribute('aria-hidden','true');
-      document.body.style.overflow = '';
-    }
-
-    openBtn.addEventListener('click', openInicio);
-    ingresarBtn.addEventListener('click', closeInicio);
-
-    document.addEventListener('keydown', (e)=>{
-      if(e.key === 'Escape' && screenInicio.style.display === 'block'){ closeInicio(); }
-    });
-  </script>
-</body>
-</html>
-
+          <div class="chev" aria-hidden="
